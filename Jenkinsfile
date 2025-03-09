@@ -8,7 +8,7 @@ def COLOR_MAP = [
 pipeline { 
     agent any
     tools {
-        maveuun "MAVEN3.9"
+        maven "MAVEN3.9"
         jdk "JDK17"
     }
 
@@ -41,9 +41,11 @@ pipeline {
                     archiveArtifacts artifacts: '**/*.war'
                 }
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Build FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Build FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -59,9 +61,11 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Tests FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Tests FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -77,9 +81,11 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Checkstyle Analysis FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Checkstyle Analysis FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -109,9 +115,11 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Sonar Analysis FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Sonar Analysis FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -129,9 +137,11 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Quality Gate FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Quality Gate FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -161,9 +171,11 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP['FAILURE'],
-                        message: "*Upload Artifact FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    script {
+                        slackSend channel: '#jenkinscicd',
+                            color: COLOR_MAP['FAILURE'],
+                            message: "*Upload Artifact FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    }
                 }
             }
         }
@@ -172,9 +184,12 @@ pipeline {
     post {
         always {
             script {
-                def buildStatus = currentBuild.currentResult ?: 'SUCCESS'  // Default if undefined
+                def buildStatus = currentBuild.result ?: 'SUCCESS'  // Explicitly use `currentBuild.result`
+                
+                echo "DEBUG: Build Status - ${buildStatus}"  // Debug log
+
                 slackSend channel: '#jenkinscicd',
-                    color: COLOR_MAP[buildStatus] ?: 'warning',
+                    color: COLOR_MAP.get(buildStatus, 'warning'),  // Ensure default color
                     message: "*${buildStatus}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
             }
         }
