@@ -171,10 +171,12 @@ pipeline {
 
     post {
         always {
-            def buildStatus = currentBuild.currentResult ?: 'SUCCESS'  // Default if undefined
-            slackSend channel: '#jenkinscicd',
-                color: COLOR_MAP[buildStatus] ?: 'warning',
-                message: "*${buildStatus}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+            script {
+                def buildStatus = currentBuild.currentResult ?: 'SUCCESS'  // Default if undefined
+                slackSend channel: '#jenkinscicd',
+                    color: COLOR_MAP[buildStatus] ?: 'warning',
+                    message: "*${buildStatus}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+            }
         }
     }
 }
