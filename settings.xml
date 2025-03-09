@@ -5,34 +5,66 @@
 
   <servers>
     <server>
-      <id>${SNAP_REPO}</id>
-      <username>${NEXUS_USER}</username>
-      <password>${NEXUS_PASS}</password>
+      <id>vprofile-snapshot</id>
+      <username>${env.NEXUS_USER}</username>
+      <password>${env.NEXUS_PASS}</password>
     </server>
     <server>
-      <id>${RELEASE_REPO}</id>
-      <username>${NEXUS_USER}</username>
-      <password>${NEXUS_PASS}</password>
-    </server>
-        <server>
-        <id>${CENTRAL_REPO}</id>
-      <username>${NEXUS_USER}</username>
-      <password>${NEXUS_PASS}</password>
+      <id>vprofile-release</id>
+      <username>${env.NEXUS_USER}</username>
+      <password>${env.NEXUS_PASS}</password>
     </server>
     <server>
-        <id>${NEXUS_GRP_REPO}</id>
-      <username>${NEXUS_USER}</username>
-      <password>${NEXUS_PASS}</password>
+      <id>vpro-maven-central</id>
+      <username>${env.NEXUS_USER}</username>
+      <password>${env.NEXUS_PASS}</password>
+    </server>
+    <server>
+      <id>vpro-maven-group</id>
+      <username>${env.NEXUS_USER}</username>
+      <password>${env.NEXUS_PASS}</password>
     </server>
   </servers>
 
   <mirrors>
     <mirror>
-      <id>${CENTRAL_REPO}</id>
-      <name>${CENTRAL_REPO}</name>
-      <url>http://${NEXUSIP}:${NEXUSPORT}/repository/${NEXUS_GRP_REPO}/</url>
+      <id>vpro-maven-group</id>
+      <name>vpro-maven-group</name>
+      <url>http://${env.NEXUSIP}:${env.NEXUSPORT}/repository/vpro-maven-group/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>
+
+  <profiles>
+    <profile>
+      <id>nexus</id>
+      <repositories>
+        <repository>
+          <id>vprofile-release</id>
+          <url>http://${env.NEXUSIP}:${env.NEXUSPORT}/repository/vprofile-release/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>vprofile-snapshot</id>
+          <url>http://${env.NEXUSIP}:${env.NEXUSPORT}/repository/vprofile-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>nexus</activeProfile>
+  </activeProfiles>
 
 </settings>
